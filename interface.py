@@ -2,6 +2,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import filedialog
 import prediccion as pr
+import cv2 as cv
 
 raiz = Tk()
 raiz.title('Test Classifier')
@@ -15,14 +16,10 @@ posicion = str(ancho_ventana) + "x" + str(alto_ventana) + "+" + str(x_ventana) +
 raiz.geometry(posicion)
 
 
-def openFile():
+def openFile(file):
     global image
     global clase
     global porcentaje
-    file = filedialog.askopenfilename(
-        title = "File to Open", 
-        initialdir = 'prueba',
-        filetypes = [("Images Files","*.jpg")])
     frame = LabelFrame(raiz, text = 'Image')
     frame.place(relx=0.02, rely = 0.02, relheight = 0.83, relwidth = 0.6)
     image = ImageTk.PhotoImage(Image.open(file).resize((210,210)))
@@ -33,11 +30,27 @@ def openFile():
     label3 = Label(frame2, text = '-' + porcentaje + '%')
     label3.place(relx = 0, rely = 0.6)
 
+def openFolder():
+    file = filedialog.askopenfilename(
+        title = "File to Open", 
+        initialdir = 'img\prueba',
+        filetypes = [("Images Files","*.jpg")])
+    openFile(file)
+
+def camara():
+    cam = cv.VideoCapture(0)
+    ret, frame = cam.read()
+    cv.imwrite("img\picture.jpg", frame)
+    cam.release()
+    file = "img/picture.jpg"
+    openFile(file)
 
 frame = LabelFrame(raiz, text = 'Image')
 frame.place(relx=0.02, rely = 0.02, relheight = 0.83, relwidth = 0.6)
-boton = Button(raiz, text = "Open File",command = openFile)
-boton.place(relx = 0.03 ,rely = 0.87, relwidth = 0.17, relheight = 0.1)
+boton = Button(raiz, text = "Open File",command = openFolder)
+boton.place(relx = 0.03, rely = 0.87, relwidth = 0.17, relheight = 0.1)
+boton = Button(raiz, text = "Open Cam",command = camara)
+boton.place(relx = 0.22, rely = 0.87, relwidth = 0.17, relheight = 0.1)
 
 frame2 = LabelFrame(raiz, text = 'Classification')
 frame2.place(relx = 0.7, rely = 0.02, relheight = 0.83, relwidth = 0.25)
